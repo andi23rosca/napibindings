@@ -110,10 +110,88 @@ proc napi_get_element*(env: napi_env, obj: napi_value, index: uint32, result: pt
 
 proc napi_delete_element*(env: napi_env, obj: napi_value, index: uint32, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
 
-proc napi_define_properties*(env: napi_env, obj: napi_value, property_count: csize_t, properties: ptr NapiProperyDescriptor): NapiStatus {.header: "<node_api.h>".}
+proc napi_define_properties*(env: napi_env, obj: napi_value, property_count: csize_t, properties: ptr NapiPropertyDescriptor): NapiStatus {.header: "<node_api.h>".}
 
 
+
+# Methods to work with Arrays
+proc napi_is_array*(env: napi_env, value: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_get_array_length*(env: napi_env, value: napi_value, result: ptr uint32): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Methods to compare values
+proc napi_strict_equals*(env: napi_env, lhs: napi_value, rhs: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Methods to work with Functions
+proc napi_call_function*(env: napi_env, recv: napi_value, fn: napi_value, argc: csize_t, argv: ptr napi_value, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_new_instance*(env: napi_env, constructor: napi_value, argc: csize_t, argv: ptr napi_value, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_instanceof*(env: napi_env, obj: napi_value, constructor: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Methods to work with napi_callbacks
+
+# Gets all callback info in a single call. (Ugly, but faster.)
+proc napi_get_cb_info*(
+  env: napi_env,
+  cbinfo: napi_callback_info,
+  argc: ptr csize_t,
+  argv: ptr UncheckedArray[napi_value],
+  this_arg: napi_value,
+  data: ptr pointer): NapiStatus {.header:"<node_api.h>".}
+
+proc napi_get_new_target*(env: napi_env, cbinfo: napi_callback_info, result: ptr napi_value): NapiStatus {.header:"<node_api.h>".}
+
+proc napi_define_class*(
+  env: napi_env,
+  utf8name: cstring,
+  length: csize_t,
+  constructor: napi_callback,
+  data: pointer,
+  property_count: csize_t,
+  properties: ptr NapiPropertyDescriptor,
+  result: ptr napi_value): NapiStatus {.header:"<node_api.h>".}
+
+
+
+# Methods to work with external data objects
+proc napi_wrap*(
+  env: napi_env,
+  js_object: napi_value,
+  native_object: pointer,
+  finalize_cb: napi_finalize,
+  finalize_hint: pointer,
+  result: ptr napi_ref): NapiStatus {.header:"<node_api.h>".}
+
+proc napi_unrwap*(env: napi_env, js_object: napi_value, result: ptr pointer): NapiStatus {.header:"<node_api.h>".}
+
+proc napi_remove_wrap*(env: napi_env, js_object: napi_value, result: ptr pointer): NapiStatus {.header:"<node_api.h>".}
+
+proc napi_create_external*(
+  env: napi_env,
+  data: pointer,
+  finalize_cb: napi_finalize,
+  finalize_hint: pointer,
+  result: ptr napi_value): NapiStatus {.header:"<node_api.h>".}
+
+proc napi_get_value_external*(env: napi_env, value: napi_value, result: ptr pointer): NapiStatus {.header:"<node_api.h>".}
+
+# TODO: Add "Methods to control object lifespan"
+
+
+# Methods to support error handling
+proc napi_throw*(env: napi_env, error: napi_value): NapiStatus {.header: "<node_api.h>".}
 
 proc napi_throw_error*(env: napi_env, code: cstring, msg: cstring): NapiStatus {.header: "<node_api.h>".}
 
-proc napi_get_cb_info*(env: napi_env, cbinfo: napi_callback_info, argc: ptr csize_t, argv: ptr UncheckedArray[napi_value], this_arg: napi_value, data: pointer): NapiStatus {.header:"<node_api.h>".}
+proc napi_throw_type_error*(env: napi_env, code: cstring, msg: cstring): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_throw_range_error*(env: napi_env, code: cstring, msg: cstring): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_is_error*(env: napi_env, value: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}

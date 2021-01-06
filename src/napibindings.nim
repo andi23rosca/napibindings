@@ -20,7 +20,7 @@ proc assessStatus*(status: NapiStatus) {.raises: [NapiStatusError].} =
 type Module* = ref object
   val*: napi_value
   env*: napi_env
-  descriptors: seq[NapiProperyDescriptor]
+  descriptors: seq[NapiPropertyDescriptor]
 
 
 proc newNodeValue*(val: napi_value, env: napi_env): Module =
@@ -253,7 +253,7 @@ proc undefined*: napi_value =
 
 proc registerBase(obj: Module, name: string, value: napi_value, attr: int) =
   obj.descriptors.add(
-    NapiProperyDescriptor(
+    NapiPropertyDescriptor(
       utf8name: name,
       value: value,
       attributes: napi_default
@@ -332,7 +332,7 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
 
 
 proc defineProperties*(obj: Module) =
-  assessStatus napi_define_properties(obj.env, obj.val, obj.descriptors.len.csize_t, cast[ptr NapiProperyDescriptor](obj.descriptors.toUnchecked))
+  assessStatus napi_define_properties(obj.env, obj.val, obj.descriptors.len.csize_t, cast[ptr NapiPropertyDescriptor](obj.descriptors.toUnchecked))
 
 
 

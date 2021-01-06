@@ -70,7 +70,7 @@ type napi_callback* = proc(environment: napi_env, info: napi_callback_info): nap
 
 type napi_finalize* = proc(environment: napi_env, finalize_data, finalize_hint: pointer): void {.cdecl.}
 
-type NapiProperyDescriptor* {.importc: "napi_property_descriptor", header:"<node_api.h>".} = object
+type NapiPropertyDescriptor* {.importc: "napi_property_descriptor", header:"<node_api.h>".} = object
   utf8name*: cstring
   name*, value*: napi_value
   attributes*: NApiPropertyAttributes
