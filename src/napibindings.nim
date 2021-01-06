@@ -241,13 +241,11 @@ proc `[]=`*(obj: napi_value, index: int, value: napi_value) =
 
 proc null*: napi_value =
   ##Returns JavaScript ``null`` value
-  proc napi_get_null(env: napi_env, res: napi_value) {.header: "<node_api.h>".}
-  napi_get_null(`env$`, addr result)
+  assessStatus napi_get_null(`env$`, addr result)
 
 proc undefined*: napi_value =
   ##Returns JavaScript ``undefined`` value
-  proc napi_get_undefined(env: napi_env, res: napi_value) {.header: "<node_api.h>".}
-  napi_get_undefined(`env$`, addr result)
+  assessStatus napi_get_undefined(`env$`, addr result)
 
 
 
@@ -334,7 +332,6 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
 
 
 proc defineProperties*(obj: Module) =
-  proc napi_define_properties(env: napi_env, val: napi_value, property_count: csize_t, properties: ptr NapiProperyDescriptor): NapiStatus {.header:"<node_api.h>".}
   assessStatus napi_define_properties(obj.env, obj.val, obj.descriptors.len.csize_t, cast[ptr NapiProperyDescriptor](obj.descriptors.toUnchecked))
 
 

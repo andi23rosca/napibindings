@@ -110,6 +110,7 @@ proc napi_get_element*(env: napi_env, obj: napi_value, index: uint32, result: pt
 
 proc napi_delete_element*(env: napi_env, obj: napi_value, index: uint32, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
 
+proc napi_define_properties*(env: napi_env, obj: napi_value, property_count: csize_t, properties: ptr NapiProperyDescriptor): NapiStatus {.header: "<node_api.h>".}
 
 
 
