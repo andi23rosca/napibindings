@@ -1,6 +1,6 @@
 import macros
 
-type NapiStatusError = object of Exception
+type NapiStatusError = object of CatchableError
 
 type napi_env* = pointer
 
@@ -96,8 +96,8 @@ proc create(env: napi_env, n: float64): napi_value =
   assessStatus ( napi_create_double(env, n, addr result) )
 
 proc create(env: napi_env, s: string): napi_value =
-  proc napi_create_string_utf8(env: napi_env, str: cstring, length: csize, val: ptr napi_value): int {.header:"<node_api.h>".}
-  assessStatus ( napi_create_string_utf8(env, s, s.len, addr result) )
+  proc napi_create_string_utf8(env: napi_env, str: cstring, length: csize_t, val: ptr napi_value): int {.header:"<node_api.h>".}
+  assessStatus ( napi_create_string_utf8(env, s, s.len.csize_t, addr result) )
 
 proc create(env: napi_env, p: openarray[(string, napi_value)]): napi_value =
   proc napi_create_object(env: napi_env, res: ptr napi_value): int {.header:"<node_api.h>".}
@@ -108,10 +108,10 @@ proc create(env: napi_env, p: openarray[(string, napi_value)]): napi_value =
 
 
 proc create(env: napi_env, a: openarray[napi_value]): napi_value =
-  proc napi_create_array_with_length(e: napi_env, length: csize, res: ptr napi_value): int {.header:"<node_api.h>".}
-  proc napi_set_element(e: napi_env, o: napi_value, index: csize, value: napi_value): int {.header:"<node_api.h>".}
-  assessStatus( napi_create_array_with_length(env, a.len, addr result) )
-  for i, elem in a.enumerate: assessStatus napi_set_element(env, result, i, a[i])
+  proc napi_create_array_with_length(e: napi_env, length: csize_t, res: ptr napi_value): int {.header:"<node_api.h>".}
+  proc napi_set_element(e: napi_env, o: napi_value, index: csize_t, value: napi_value): int {.header:"<node_api.h>".}
+  assessStatus( napi_create_array_with_length(env, a.len.csize_t, addr result) )
+  for i, elem in a.enumerate: assessStatus napi_set_element(env, result, i.csize_t, a[i])
 
 proc create[T: int | uint | string](env: napi_env, a: openarray[T]): napi_value =
   var elements = newSeq[napi_value]()
@@ -125,8 +125,8 @@ proc create[T: int | uint | string](env: napi_env, a: openarray[(string, T)]): n
   env.create(a)
 
 proc createFn*(env: napi_env, fname: string, cb: napi_callback): napi_value =
-  proc napi_create_function(env: napi_env, utf8name: cstring, length: csize, cb: napi_callback, data: pointer, res: napi_value): int {.header:"<node_api.h>".}
-  assessStatus ( napi_create_function(env, fname, fname.len, cb, nil, addr result) )
+  proc napi_create_function(env: napi_env, utf8name: cstring, length: csize_t, cb: napi_callback, data: pointer, res: napi_value): int {.header:"<node_api.h>".}
+  assessStatus ( napi_create_function(env, fname, fname.len.csize_t, cb, nil, addr result) )
 
 proc create(env: napi_env, v: napi_value): napi_value = v
 
@@ -192,24 +192,24 @@ proc getStr*(n: napi_value, bufsize: int = 40): string =
   ##Retrieves utf8 encoded value from node; raises exception on failure
   ##
   ##Maximum return string length is equal to ``bufsize``
-  proc napi_get_value_string_utf8(e: napi_env, v: napi_value, buf: cstring, bufsize: csize, res: ptr csize): int {.header: "<node_api.h>".}
+  proc napi_get_value_string_utf8(e: napi_env, v: napi_value, buf: cstring, bufsize: csize_t, res: ptr csize_t): int {.header: "<node_api.h>".}
   var 
     buf = cast[cstring](alloc(bufsize))
-    res: csize
+    res: csize_t
 
-  assessStatus napi_get_value_string_utf8(`env$`, n, buf, bufsize, addr res)
+  assessStatus napi_get_value_string_utf8(`env$`, n, buf, bufsize.csize_t, addr res)
   return  ($buf)[0..res-1]
 
 proc getStr*(n: napi_value, default: string, bufsize: int = 40): string =
   ##Retrieves utf8 encoded value from node; returns default on failure
   ##Maximum return string length is equal to ``bufsize``
-  proc napi_get_value_string_utf8(e: napi_env, v: napi_value, buf: cstring, bufsize: csize, res: ptr csize): int {.header: "<node_api.h>".}
+  proc napi_get_value_string_utf8(e: napi_env, v: napi_value, buf: cstring, bufsize: csize_t, res: ptr csize_t): int {.header: "<node_api.h>".}
   var 
     buf = cast[cstring](alloc(bufsize))
-    res: csize
+    res: csize_t
 
   try:
-    assessStatus napi_get_value_string_utf8(`env$`, n, buf, bufsize, addr res)
+    assessStatus napi_get_value_string_utf8(`env$`, n, buf, bufsize.csize_t, addr res)
     result = ($buf)[0..res-1]
   except: result = default
 
@@ -259,7 +259,7 @@ proc hasElement*(obj: napi_value, index: int): bool =
 
 proc getElement*(obj: napi_value, index: int): napi_value =
   ##Retrieves value from ``index`` in  ``obj``; raises exception if ``obj`` is not an array or ``index`` is out of bounds
-  if not hasElement(obj, index): raise newException(IndexError, "index out of bounds")
+  if not hasElement(obj, index): raise newException(IndexDefect, "index out of bounds")
   proc napi_get_element(env: napi_env, obj: napi_value, index: uint32, res: ptr napi_value): int {.header: "<node_api.h>".}
   assessStatus napi_get_element(`env$`, obj, uint32 index, addr result)
 
@@ -334,17 +334,17 @@ proc callFunction*(fn: napi_value, args: openarray[napi_value] = [], this = %emp
   proc napi_call_function(env: napi_env, recv, fn: napi_value, argc: cint, argv, res: ptr napi_value): int {.header:"<node_api.h>".}
   assessStatus napi_call_function(`env$`, this, fn,  cint args.len, cast[ptr napi_value](args.toUnchecked()), addr result)
 
-macro getIdentStr*(n: untyped): string = $ident(n)
+template getIdentStr*(n: untyped): string = $n
 
 
 template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
   var name {.inject.}: napi_value
   block:
-    proc napi_get_cb_info(env: napi_env, cbinfo: pointer, argc: ptr csize, argv: pointer, this: napi_value, data: pointer = nil): int {.header:"<node_api.h>".}
+    proc napi_get_cb_info(env: napi_env, cbinfo: pointer, argc: ptr csize_t, argv: pointer, this: napi_value, data: pointer = nil): int {.header:"<node_api.h>".}
     proc `wrapper$`(environment: napi_env, info: pointer): napi_value {.cdecl.} =
       var 
         `argv$` = cast[ptr UncheckedArray[napi_value]](alloc(paramCt * sizeof(napi_value)))
-        argc: csize = paramCt
+        argc: csize_t = paramCt
         this: napi_value
         args = newSeq[napi_value]()
       `env$` = environment
@@ -359,11 +359,11 @@ template fn*(paramCt: int, name, cushy: untyped): untyped {.dirty.} =
 
 template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped): untyped {.dirty.}=
   block:
-    proc napi_get_cb_info(env: napi_env, cbinfo: pointer, argc: ptr csize, argv: pointer, this: napi_value, data: pointer = nil): int {.header:"<node_api.h>".}
+    proc napi_get_cb_info(env: napi_env, cbinfo: pointer, argc: ptr csize_t, argv: pointer, this: napi_value, data: pointer = nil): int {.header:"<node_api.h>".}
     proc `wrapper$`(environment: napi_env, info: pointer): napi_value {.cdecl.} =
       var 
         `argv$` = cast[ptr UncheckedArray[napi_value]](alloc(paramCt * sizeof(napi_value)))
-        argc: csize = paramCt
+        argc: csize_t = paramCt
         this: napi_value
         args = newSeq[napi_value]()
       `env$` = environment
@@ -377,8 +377,8 @@ template registerFn*(exports: Module, paramCt: int, name: string, cushy: untyped
 
 
 proc defineProperties*(obj: Module) =
-  proc napi_define_properties(env: napi_env, val: napi_value, property_count: csize, properties: ptr napi_property_descriptor): int {.header:"<node_api.h>".}
-  assessStatus napi_define_properties(obj.env, obj.val, obj.descriptors.len, cast[ptr napi_property_descriptor](obj.descriptors.toUnchecked))
+  proc napi_define_properties(env: napi_env, val: napi_value, property_count: csize_t, properties: ptr napi_property_descriptor): int {.header:"<node_api.h>".}
+  assessStatus napi_define_properties(obj.env, obj.val, obj.descriptors.len.csize_t, cast[ptr napi_property_descriptor](obj.descriptors.toUnchecked))
 
 
 
@@ -408,7 +408,7 @@ proc toNapiValue(x: NimNode): NimNode {.compiletime.} =
 macro `%*`*(x: untyped): untyped =
   return toNapiValue(x)
 
-macro init*(initHook: proc(exports: Module)): typed =
+macro init*(initHook: proc(exports: Module)): void =
   ##Bootstraps module; use by calling ``register`` to add properties to ``exports``
   ##
   ##.. code-block:: Nim
