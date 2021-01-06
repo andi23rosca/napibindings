@@ -17,3 +17,8 @@ init proc(exports: Module) =
     ##``args[2]`` : default
     args[0].getElement(args[1].getInt, args[2])
 
+  exports.registerFn(3, "setProp"):
+    ##``args[0]`` : object
+    ##``args[1]`` : property
+    ##``args[2]`` : value
+    args[0].setProperty(args[1].getStr, args[2])

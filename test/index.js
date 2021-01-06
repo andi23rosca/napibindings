@@ -7,3 +7,7 @@ assert.deepStrictEqual(addon.createArray('jim', 'bob', 3), ['jim', 'bob', 3])
 
 assert.strictEqual(addon.getOrDefault([1, 2, 3], 0/*index*/, 'unexpected'/*default*/), 1)
 assert.strictEqual(addon.getOrDefault([1, 2, 3], 5/*index*/, 'expected'/*default*/), 'expected')
+
+const obj = {};
+addon.setProp(obj, "myKey", 20);
+assert.deepStrictEqual(obj, { myKey: 20 });
