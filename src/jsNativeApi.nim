@@ -29,6 +29,9 @@ proc napi_create_uint32*(env: napi_env, value: uint32, result: ptr napi_value): 
 
 proc napi_create_int64*(env: napi_env, value: int64, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
 
+# Not part of original api
+proc napi_create_uint64*(env: napi_env, value: uint64, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
 proc napi_create_string_latin1*(env: napi_env, str: cstring, length: csize_t, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
 
 proc napi_create_string_utf8*(env: napi_env, str: cstring, length: csize_t, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
@@ -51,7 +54,7 @@ proc napi_typeof*(env: napi_env, value: napi_value, result: ptr NapiValueType): 
 
 proc napi_get_value_double*(env: napi_env, value: napi_value, result: ptr float64): NapiStatus {.header: "<node_api.h>".}
 
-proc napi_get_value_int32*(env: napi_env, value: napi_value, result: ptr uint32): NapiStatus {.header: "<node_api.h>".}
+proc napi_get_value_int32*(env: napi_env, value: napi_value, result: ptr int32): NapiStatus {.header: "<node_api.h>".}
 
 proc napi_get_value_uint32*(env: napi_env, value: napi_value, result: ptr uint32): NapiStatus {.header: "<node_api.h>".}
 
