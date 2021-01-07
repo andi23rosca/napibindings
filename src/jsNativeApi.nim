@@ -195,3 +195,118 @@ proc napi_throw_type_error*(env: napi_env, code: cstring, msg: cstring): NapiSta
 proc napi_throw_range_error*(env: napi_env, code: cstring, msg: cstring): NapiStatus {.header: "<node_api.h>".}
 
 proc napi_is_error*(env: napi_env, value: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Methods to support catching exceptions
+proc napi_is_exception_pending*(env: napi_env, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_get_and_clear_last_exception*(env: napi_env, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Methods to work with array buffers and typed arrays
+proc napi_is_arraybuffer*(env: napi_env, value: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_create_arraybuffer*(
+  env: napi_env, 
+  byte_length: csize_t,
+  data: ptr pointer,
+  result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_create_external_arraybuffer*(
+  env: napi_env,
+  external_data: pointer,
+  byte_length: csize_t,
+  finalize_cb: napi_finalize,
+  finalize_hint: pointer,
+  result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_get_arraybuffer_info*(
+  env: napi_env, 
+  arraybuffer: napi_value,
+  data: ptr pointer,
+  byte_length: ptr csize_t): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_is_typedarray*(env: napi_env, value: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_create_typedarray*(
+  env: napi_env,
+  array_type: NApiTypedArrayType,
+  length: csize_t,
+  arraybuffer: napi_value,
+  byte_offset: csize_t,
+  result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_get_typedarray_info*(
+  env: napi_env,
+  typedarray: napi_value,
+  array_type: ptr NApiTypedArrayType,
+  length: ptr csize_t,
+  data: ptr pointer,
+  arraybuffer: ptr napi_value,
+  byte_offset: csize_t): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_create_dataview*(
+  env: napi_env,
+  length: csize_t,
+  arraybuffer: napi_value,
+  byte_offset: csize_t,
+  result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_is_dataview*(env: napi_env, value: napi_value, result: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_get_dataview_info*(
+  env: napi_env,
+  dataview: napi_value,
+  byte_length: ptr csize_t,
+  data: ptr pointer,
+  arraybuffer: ptr napi_value,
+  byte_offset: ptr csize_t): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Version management
+proc napi_get_version*(env: napi_env, result: ptr uint32): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Promises
+proc napi_create_promise*(env: napi_env, deffered: ptr napi_deferred, promise: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_resolve_deferred*(env: napi_env, deffered: napi_deferred, resolution: napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_reject_deferred*(env: napi_env, deffered: napi_deferred, rejection: napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_is_promise*(env: napi_env, promise: napi_value, is_promise: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Running a script
+proc napi_run_script*(env: napi_env, script: napi_value, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Memory management
+proc napi_adjust_external_memory*(env: napi_env, change_in_bytes: int64, adjusted_value: ptr int64): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# Dates
+proc napi_create_date*(env: napi_env, time: float64, result: ptr napi_value): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_is_date*(env: napi_env, value: napi_value, is_date: ptr bool): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_get_date_value*(env: napi_env, value: napi_value, result: ptr float64): NapiStatus {.header: "<node_api.h>".}
+
+proc napi_add_finalizer*(
+  env: napi_env,
+  js_object: napi_value,
+  native_object: pointer,
+  finalize_cb: napi_finalize,
+  finalize_hint: pointer,
+  result: ptr napi_ref): NapiStatus {.header: "<node_api.h>".}
+
+
+
+# TODO Add experimental features?
