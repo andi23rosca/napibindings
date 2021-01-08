@@ -6,7 +6,7 @@ type NapiModule* {.importc: "napi_module", header:"<node_api.h>".} = object
   nm_version: cint
   nm_flags: cuint
   nm_filename: cstring
-  nm_register_func: napi_addon_register_func.typeof
+  nm_register_func: ptr napi_addon_register_func.typeof
   nm_modname: cstring
   nm_priv: pointer
   reserved: pointer
