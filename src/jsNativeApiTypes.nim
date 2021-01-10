@@ -1,11 +1,11 @@
 type
-  napi_env* = pointer
-  napi_value* = pointer
-  napi_ref* = pointer
-  napi_handle_scope* = pointer
-  napi_escapable_handle_scope* = pointer
-  napi_callback_info* = pointer
-  napi_deferred* = pointer
+  napi_env* {.header:"<node_api.h>".} = pointer
+  napi_value* {.header:"<node_api.h>".} = pointer
+  napi_ref* {.header:"<node_api.h>".} = pointer
+  napi_handle_scope* {.header:"<node_api.h>".} = pointer
+  napi_escapable_handle_scope* {.header:"<node_api.h>".} = pointer
+  napi_callback_info* {.header:"<node_api.h>".} = pointer
+  napi_deferred* {.header:"<node_api.h>".} = pointer
 
 type NApiPropertyAttributes* {.importc: "napi_property_attributes", header:"<node_api.h>".} = enum
   napi_default = 0
