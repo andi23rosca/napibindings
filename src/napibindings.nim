@@ -1,7 +1,11 @@
 import macros
-import napibindings/utils
 
-import jsNativeApiTypes, jsNativeApi, nodeApi
+import
+  napibindings/jsNativeApiTypes,
+  napibindings/jsNativeApi,
+  napibindings/nodeApi,
+  napibindings/utils
+
 export jsNativeApiTypes, jsNativeApi, nodeApi
 
 type NapiStatusError = object of CatchableError
